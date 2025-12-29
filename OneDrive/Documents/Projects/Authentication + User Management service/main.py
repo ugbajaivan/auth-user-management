@@ -1,5 +1,6 @@
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import FastAPI, HTTPException, Depends, Request
+from sqlalchemy.orm import Session
 from app.auth_service import (
     create_user,
     authenticate_user,
@@ -8,14 +9,22 @@ from app.auth_service import (
     UserAlreadyExists,
     WeakPassword,
     InvalidCredentials,
-    SECRET_KEY,  # Import directly to verify
-    ALGORITHM    # Import directly to verify
+    SECRET_KEY,
+    ALGORITHM
 )
 from app.models import SignupRequest, LoginRequest
+from app.database import get_db, create_tables
 import logging
+from datetime import datetime, timedelta
+import jwt
 
 # ============================================
-# SETUP LOGGING - This is CRUCIAL for debugging
+# INITIALIZE DATABASE
+# ============================================
+create_tables()  # Creates database tables on startup
+
+# ============================================
+# SETUP LOGGING
 # ============================================
 logging.basicConfig(
     level=logging.INFO,
@@ -24,8 +33,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="Auth & User Management API - Learning Edition",
-    description="A complete authentication system with JWT tokens. Built for learning!",
+    title="Auth & User Management API - SQLite Edition",
+    description="A complete authentication system with SQLite database",
     version="1.0.0"
 )
 
@@ -51,9 +60,9 @@ async def log_requests(request: Request, call_next):
 # API ENDPOINTS
 # ============================================
 @app.post("/signup")
-def signup(data: SignupRequest):
+def signup(data: SignupRequest, db: Session = Depends(get_db)):
     """
-    Create a new user account
+    Create a new user account in SQLite database
     
     Requirements:
     - Username must be unique
@@ -65,11 +74,12 @@ def signup(data: SignupRequest):
     logger.info(f"Signup attempt for username: {data.username}")
     
     try:
-        create_user(data.username, data.password)
+        create_user(db, data.username, data.password)
         logger.info(f"User created successfully: {data.username}")
         return {
             "message": "User created successfully",
             "username": data.username,
+            "storage": "SQLite database",
             "next_step": "Use /login to get a JWT token"
         }
     except UserAlreadyExists:
@@ -83,7 +93,7 @@ def signup(data: SignupRequest):
         )
 
 @app.post("/login")
-def login(data: LoginRequest):
+def login(data: LoginRequest, db: Session = Depends(get_db)):
     """
     Authenticate and receive a JWT token
     
@@ -97,8 +107,8 @@ def login(data: LoginRequest):
     logger.info(f"Login attempt for username: {data.username}")
     
     try:
-        # Step 1: Verify credentials
-        authenticate_user(data.username, data.password)
+        # Step 1: Verify credentials from database
+        authenticate_user(db, data.username, data.password)
         logger.info(f"Credentials valid for: {data.username}")
         
         # Step 2: Create JWT token
@@ -112,8 +122,8 @@ def login(data: LoginRequest):
         return {
             "access_token": token,
             "token_type": "bearer",
-            "instructions": "Use this token in the Authorization header: 'Bearer YOUR_TOKEN'",
-            "test_endpoint": "/test-token-debug (POST your token here to verify)"
+            "storage_backend": "SQLite database",
+            "instructions": "Use this token in Authorization header: 'Bearer YOUR_TOKEN'"
         }
     except InvalidCredentials:
         logger.warning(f"Invalid credentials for: {data.username}")
@@ -162,25 +172,36 @@ def protected_route(current_user: str = Depends(get_current_user)):
     Example protected endpoint
     
     Requires valid JWT token in Authorization header
-    
-    Try it: 
-    1. Get token from /login
-    2. Click "Authorize" button (top-right in docs)
-    3. Enter: "Bearer YOUR_TOKEN"
-    4. Try this endpoint
     """
     return {
         "message": f"Hello {current_user}!",
         "note": "You successfully accessed a protected route",
         "user": current_user,
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
+        "storage": "SQLite database"
+    }
+
+# ============================================
+# DATABASE INFO ENDPOINT
+# ============================================
+@app.get("/database-info")
+def database_info(db: Session = Depends(get_db)):
+    """Show database statistics"""
+    from app.database import User
+    total_users = db.query(User).count()
+    
+    return {
+        "database": "SQLite",
+        "database_file": "users.db",
+        "total_users": total_users,
+        "table": "users",
+        "columns": ["id", "username", "password_hash"],
+        "status": "connected"
     }
 
 # ============================================
 # DEBUG & LEARNING ENDPOINTS
 # ============================================
-from datetime import datetime, timedelta
-
 @app.get("/")
 def root():
     """Welcome endpoint with API information"""
@@ -188,21 +209,20 @@ def root():
         "api": "Authentication & User Management Service",
         "version": "1.0.0",
         "author": "Your Name Here",
+        "database": "SQLite",
         "endpoints": {
             "signup": "/signup (POST)",
             "login": "/login (POST)",
             "protected": "/protected (GET - requires auth)",
+            "database_info": "/database-info (GET)",
             "verify": "/verify-config (GET)",
             "test": "/test-jwt-direct (GET)"
-        },
-        "github": "Add your GitHub repo URL here"
+        }
     }
 
 @app.get("/verify-config")
 def verify_jwt_config():
     """Verify JWT configuration is consistent"""
-    from app.auth_service import SECRET_KEY, ALGORITHM
-    
     return {
         "jwt_configuration": {
             "secret_key_length": len(SECRET_KEY),
@@ -210,9 +230,9 @@ def verify_jwt_config():
             "algorithm": ALGORITHM,
             "token_expiry_minutes": 30
         },
-        "verification": {
-            "same_key_for_encode_decode": True,
-            "note": "If encoding and decoding use different keys, tokens won't verify"
+        "database": {
+            "type": "SQLite",
+            "file": "users.db"
         }
     }
 
@@ -254,9 +274,6 @@ def debug_token_test(token: str):
 @app.get("/test-jwt-direct")
 def test_jwt_direct_creation():
     """Direct JWT test bypassing the auth service"""
-    from app.auth_service import SECRET_KEY, ALGORITHM
-    import jwt
-    
     # Create a simple test token
     test_payload = {
         "sub": "testuser",
@@ -294,22 +311,15 @@ def test_jwt_direct_creation():
 # USER MANAGEMENT ENDPOINTS (For learning)
 # ============================================
 @app.get("/users/count")
-def count_users():
-    """Count how many users are registered (for learning)"""
-    import os
-    filename = "users.csv"
-    
-    if not os.path.exists(filename):
-        return {"total_users": 0, "file_exists": False}
-    
-    with open(filename, 'r') as file:
-        # Subtract 1 for header row
-        total = sum(1 for line in file) - 1
+def count_users(db: Session = Depends(get_db)):
+    """Count how many users are registered in database"""
+    from app.database import User
+    total_users = db.query(User).count()
     
     return {
-        "total_users": max(total, 0),
-        "file_exists": True,
-        "filename": filename
+        "total_users": total_users,
+        "database": "SQLite",
+        "table": "users"
     }
 
 if __name__ == "__main__":
