@@ -2,3 +2,5 @@ fastapi
 uvicorn
 bcrypt
 PyJWT
+requests
+sqlalchemy

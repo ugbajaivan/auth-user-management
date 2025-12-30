@@ -1,16 +1,16 @@
 import bcrypt
-import csv
-import os
 import jwt
 from datetime import datetime, timedelta
 import logging
+from sqlalchemy.orm import Session
+from .database import User
 
 logger = logging.getLogger(__name__)
 
 # ============================================
-# CRITICAL: SINGLE SOURCE OF TRUTH FOR JWT CONFIG
+# JWT CONFIGURATION
 # ============================================
-SECRET_KEY = "my-super-secure-jwt-secret-key-12345!"  # Must be the same everywhere
+SECRET_KEY = "my-super-secure-jwt-secret-key-12345!"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -21,13 +21,13 @@ print(f"ALGORITHM: {ALGORITHM}")
 print(f"EXPIRY: {ACCESS_TOKEN_EXPIRE_MINUTES} minutes")
 print("=" * 50)
 
-# Exception classes (keep these)
+# Exception classes
 class AuthError(Exception): pass
 class UserAlreadyExists(AuthError): pass
 class WeakPassword(AuthError): pass
 class InvalidCredentials(AuthError): pass
 
-# Password validation (keep this)
+# Password validation
 LEGAL_SYMBOLS = "!.@#$%^&*()_[]"
 
 def password_valid(password: str) -> bool:
@@ -42,80 +42,78 @@ def password_valid(password: str) -> bool:
 
     return all([has_upper, has_lower, has_digit, has_symbol])
 
-def create_user(userid: str, password: str, filename="users.csv"):
-    """Create new user"""
+
+# ============================================
+# DATABASE OPERATIONS
+# ============================================
+def create_user(db: Session, username: str, password: str):
+    """
+    Create new user in DATABASE
+    """
+    logger.info(f"Creating user: {username}")
+    
     if not password_valid(password):
         raise WeakPassword("Password too weak")
     
-    # Check existing users
-    existing = set()
-    if os.path.exists(filename):
-        with open(filename, 'r') as f:
-            reader = csv.reader(f)
-            next(reader, None)  # Skip header
-            for row in reader:
-                if row and row[0]:
-                    existing.add(row[0])
+    # Check if user exists
+    existing_user = db.query(User).filter(User.username == username).first()
+    if existing_user:
+        raise UserAlreadyExists("User already exists")
     
-    if userid in existing:
-        raise UserAlreadyExists("User exists")
+    # Hash password
+    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     
-    # Hash and save
-    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    # Create User object
+    new_user = User(username=username, password_hash=password_hash)
     
-    with open(filename, 'a', newline='') as f:
-        writer = csv.writer(f)
-        if not os.path.exists(filename) or os.path.getsize(filename) == 0:
-            writer.writerow(["userid", "password_hash"])
-        writer.writerow([userid, hashed])
+    # Save to database
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
     
-    logger.info(f"User created: {userid}")
+    logger.info(f"User created with ID: {new_user.id}")
+    return new_user
 
-def authenticate_user(userid: str, password: str, filename="users.csv"):
-    """Authenticate user"""
-    if not os.path.exists(filename):
-        raise InvalidCredentials("Invalid credentials")
+
+def authenticate_user(db: Session, username: str, password: str):
+    """
+    Authenticate user from DATABASE
+    """
+    logger.info(f"Authenticating user: {username}")
     
-    with open(filename, 'r') as f:
-        reader = csv.reader(f)
-        next(reader, None)
-        for row in reader:
-            if len(row) >= 2 and row[0] == userid:
-                if bcrypt.checkpw(password.encode(), row[1].encode()):
-                    return True
-                else:
-                    raise InvalidCredentials("Invalid credentials")
+    # Find user
+    user = db.query(User).filter(User.username == username).first()
     
-    raise InvalidCredentials("Invalid credentials")
+    if not user:
+        raise InvalidCredentials("User not found")
+    
+    # Verify password
+    if bcrypt.checkpw(password.encode(), user.password_hash.encode()):
+        logger.info(f"Authentication successful for: {username}")
+        return True
+    else:
+        raise InvalidCredentials("Invalid password")
+
 
 # ============================================
-# JWT FUNCTIONS - SIMPLIFIED FOR DEBUGGING
+# JWT FUNCTIONS
 # ============================================
 def create_access_token(data: dict):
-    """Create JWT token - SIMPLIFIED VERSION"""
+    """Create JWT token"""
     to_encode = data.copy()
-    
-    # Add expiration
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     
     logger.info(f"Creating token with payload: {to_encode}")
-    logger.info(f"Using SECRET_KEY: {SECRET_KEY[:10]}...")
-    
-    # Create token
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    
-    logger.info(f"Token created (first 30 chars): {token[:30]}...")
-    logger.info(f"Full token length: {len(token)} characters")
+    logger.info(f"Token created: {token[:30]}...")
     
     return token
 
+
 def decode_access_token(token: str):
-    """Decode JWT token - SIMPLIFIED VERSION"""
+    """Decode JWT token"""
     logger.info(f"Attempting to decode token")
-    logger.info(f"Token input: {token[:30]}...")
-    logger.info(f"Using SECRET_KEY: {SECRET_KEY[:10]}...")
-    logger.info(f"Using ALGORITHM: {ALGORITHM}")
     
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -127,6 +125,3 @@ def decode_access_token(token: str):
     except jwt.InvalidTokenError as e:
         logger.error(f"Invalid token: {str(e)}")
         raise InvalidCredentials(f"Invalid token: {str(e)}")
-    except Exception as e:
-        logger.error(f"Unexpected error: {type(e).__name__}: {str(e)}")
-        raise InvalidCredentials(f"Token error: {str(e)}")

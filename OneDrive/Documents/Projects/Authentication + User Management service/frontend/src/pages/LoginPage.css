@@ -1,0 +1,112 @@
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-left {
+  flex: 1;
+  padding: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.welcome-content {
+  max-width: 500px;
+}
+
+.welcome-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.welcome-content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.features-list {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.features-list h3 {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.features-list ul {
+  list-style: none;
+}
+
+.features-list li {
+  padding: 8px 0;
+  font-size: 1.1rem;
+}
+
+.features-list li:before {
+  content: "✓";
+  margin-right: 10px;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.login-right {
+  flex: 1;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px;
+}
+
+.signup-prompt {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.signup-prompt a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-prompt a:hover {
+  text-decoration: underline;
+}
+
+.backend-info {
+  margin-top: 15px;
+  color: #666;
+}
+
+.backend-info code {
+  background-color: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
+  }
+  
+  .login-left, .login-right {
+    padding: 40px 20px;
+  }
+  
+  .welcome-content h1 {
+    font-size: 2.2rem;
+  }
+}
