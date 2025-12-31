@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { authAPI } from '../services/api'; // ← NEW IMPORT
+import { useNavigate } from 'react-router-dom';  // ADD THIS
+import { authAPI } from '../services/api';
 import './LoginForm.css';
 
-function LoginForm({ onLoginSuccess }) { // ← Added prop
+function LoginForm({ onLoginSuccess }) {
+  const navigate = useNavigate();  // ADD THIS
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -62,6 +65,11 @@ function LoginForm({ onLoginSuccess }) { // ← Added prop
       if (onLoginSuccess) {
         onLoginSuccess(response);
       }
+      
+      // REDIRECT TO DASHBOARD - ADD THIS
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
       
     } catch (err) {
       // Handle API errors
