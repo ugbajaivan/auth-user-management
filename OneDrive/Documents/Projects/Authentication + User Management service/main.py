@@ -1,4 +1,5 @@
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from app.auth_service import (
@@ -36,6 +37,15 @@ app = FastAPI(
     title="Auth & User Management API - SQLite Edition",
     description="A complete authentication system with SQLite database",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows ALL methods including OPTIONS
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 security = HTTPBearer()

@@ -11,3 +11,50 @@ Thumbs.db
 
 # Ignore CSV data (optional if you don’t want to track users yet)
 users.csv
+
+# React/Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+dist/
+build/
+coverage/
+
+# Production builds
+.cache/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# CSV data
+users.csv
+
+# OS
+.DS_Store
+Thumbs.db
