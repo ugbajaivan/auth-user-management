@@ -1,57 +1,55 @@
-🔐 Authentication & User Management System
-📋 Project Overview
-This is my first full-stack web application built as an Engineering student exploring modern web development. It's a complete authentication system with a FastAPI backend and React frontend, featuring user registration, login, and protected routes.
+# 🔐 Authentication & User Management System
 
-Status: 🚧 Learning Project - More features coming soon!
+## 📋 Project Overview
 
-🎯 What I Learned & Built
-🔧 Tech Stack I Explored
-Layer	Technology	What I Learned
-Backend	FastAPI (Python)	Building REST APIs with automatic documentation
-Database	SQLite + SQLAlchemy	Database modeling, ORM, and migrations
-Authentication	JWT Tokens	Token-based auth, password hashing, security
-Frontend	React + React Router	Component-based UI, client-side routing
-HTTP Client	Axios	API communication, interceptors, error handling
-Styling	CSS	Responsive design, modern UI principles
-Security	CORS, bcrypt	Cross-origin security, password protection
-🚀 Features Implemented
-✅ Core Authentication
-User registration with password validation
+This is my **first full-stack web application** built as an Engineering student exploring modern web development. It's a complete authentication system with a FastAPI backend and React frontend, featuring user registration, login, and protected routes.
 
-Secure login with JWT token generation
+**Status: 🚧 Learning Project** - More features coming soon!
 
-Protected routes requiring authentication
+## 🎯 What I Learned & Built
 
-Token storage in browser localStorage
+### 🔧 Tech Stack I Explored
 
-✅ Backend (FastAPI)
-RESTful API design with proper HTTP methods
+| Layer | Technology | What I Learned |
+| :--- | :--- | :--- |
+| Backend | FastAPI (Python) | Building REST APIs with automatic documentation |
+| Database | SQLite + SQLAlchemy | Database modeling, ORM, and migrations |
+| Authentication | JWT Tokens | Token-based auth, password hashing, security |
+| Frontend	React + React Router	Component-based UI, client-side routing
+| HTTP Client | Axios | API communication, interceptors, error handling |
+| Styling | CSS | Responsive design, modern UI principles |
+| Security | CORS, bcrypt | Cross-origin security, password protection |
 
-SQLite database with user management
+## 🚀 Features Implemented
 
-Password hashing using bcrypt
+### ✅ Core Authentication
 
-JWT token creation and validation
+* User registration with password validation
+* Secure login with JWT token generation
+* Protected routes requiring authentication
+* Token storage in browser localStorage
 
-CORS middleware for cross-origin requests
+### ✅ Backend (FastAPI)
 
-Comprehensive error handling
+* RESTful API design with proper HTTP methods
+* SQLite database with user management
+* Password hashing using bcrypt
+* JWT token creation and validation
+* CORS middleware for cross-origin requests
+* Comprehensive error handling
 
-✅ Frontend (React)
-Clean, responsive login/signup forms
+### ✅ Frontend (React)
 
-React Router for navigation
+* Clean, responsive login/sign up forms
+* React Router for navigation
+* API service layer with Axios
+* Token management with interceptors
+* Real-time backend connection testing
+* Dashboard for authenticated users
 
-API service layer with Axios
+## 📁 Project Structure
 
-Token management with interceptors
-
-Real-time backend connection testing
-
-Dashboard for authenticated users
-
-📁 Project Structure
-text
+```
 Authentication + User Management service/
 ├── app/                           # FastAPI application modules
 │   ├── auth_service.py            # Authentication logic
@@ -77,176 +75,147 @@ Authentication + User Management service/
 ├── requirements.txt               # Python dependencies
 ├── users.db                       # SQLite database
 └── README.md                      # This file
-🛠️ Setup & Installation
-Prerequisites
-Python 3.8+
+```
 
-Node.js 16+
+## 🛠️ Setup & Installation
 
-Basic terminal/command line knowledge
+### Prerequisites
 
-Backend Setup
-bash
-# 1. Navigate to project directory
+* Python 3.8+
+* Node.js 16+
+* Basic terminal/command line knowledge
+
+## Backend Setup
+
+### bash
+### 1. Navigate to project directory
 cd "Authentication + User Management service"
 
-# 2. Install Python dependencies
+### 2. Install Python dependencies
 pip install -r requirements.txt
 
-# 3. Start FastAPI server
+### 3. Start FastAPI server
 python -m uvicorn main:app --reload
-Backend runs at: http://localhost:8000
-API Documentation: http://localhost:8000/docs
 
-Frontend Setup
-bash
-# 1. Navigate to frontend directory
+**Backend runs at:** http://localhost:8000
+**API Documentation:** http://localhost:8000/docs
+
+## Frontend Setup
+
+### bash
+### 1. Navigate to frontend directory
 cd frontend
 
-# 2. Install Node dependencies
+### 2. Install Node dependencies
 npm install
 
-# 3. Start React development server
+### 3. Start React development server
 npm start
-Frontend runs at: http://localhost:3000
 
-🧪 Testing the Application
-Start both servers (see Setup instructions above)
+**Frontend runs at:** http://localhost:3000
 
-Create an account at http://localhost:3000/signup
+## 🧪 Testing the Application
 
-Login with your credentials at http://localhost:3000/login
+1. **Start both servers** (see Setup instructions above)
+2. **Create an account** at http://localhost:3000/signup
+3. **Login** with your credentials at http://localhost:3000/login
+4. **Access the protected dashboard** after successful login
+5. **Explore API endpoints** at http://localhost:8000/docs
 
-Access the protected dashboard after successful login
+## 📚 What This Project Taught Me
 
-Explore API endpoints at http://localhost:8000/docs
+### Backend Development
 
-📚 What This Project Taught Me
-Backend Development
-Building REST APIs with FastAPI
+* Building REST APIs with FastAPI
+* Database design with SQLAlchemy ORM
+* Implementing authentication flows from scratch
+* Password security with bcrypt hashing
+* Error handling and input validation
+* Automatic API documentation with Swagger/OpenAPI
 
-Database design with SQLAlchemy ORM
+## Frontend Development
 
-Implementing authentication flows from scratch
+* React component-based architecture
+* State management with React Hooks
+* Client-side routing with React Router
+* Making HTTP requests with Axios
+* Handling authentication tokens and localStorage
+* Building responsive UI with CSS
 
-Password security with bcrypt hashing
+## Full-Stack Concepts
 
-Error handling and input validation
+* Connecting frontend and backend applications
+* CORS configuration for development
+* JWT token authentication flow
+* Setting up complete development environments
+* Debugging across different layers of the stack
 
-Automatic API documentation with Swagger/OpenAPI
+## 🔮 Future Improvements (Learning Goals)
 
-Frontend Development
-React component-based architecture
-
-State management with React Hooks
-
-Client-side routing with React Router
-
-Making HTTP requests with Axios
-
-Handling authentication tokens and localStorage
-
-Building responsive UI with CSS
-
-Full-Stack Concepts
-Connecting frontend and backend applications
-
-CORS configuration for development
-
-JWT token authentication flow
-
-Setting up complete development environments
-
-Debugging across different layers of the stack
-
-🔮 Future Improvements (Learning Goals)
 As I continue learning software engineering, I plan to add:
 
-🔒 Enhanced Security Features
+1. **🔒 Enhanced Security Features**
+    - Password reset functionality
+    - Email verification system
+    - Rate limiting for API endpoints
+    - Session management improvements
 
-Password reset functionality
+2. **👥 Additional User Features**
+    - Profile management and editing
+    - Change password flow
+    - User roles and permissions (admin/user)
+    - Profile picture uploads
 
-Email verification system
+3. **🛠️ Technical Enhancements**
+    - Unit and integration testing
+    - Docker containerization
+    - CI/CD pipeline setup
+    - Deployment to cloud platforms
 
-Rate limiting for API endpoints
+4. **📱 UI/UX Improvements**
+    - Dark/light mode toggle
+    - Better loading states and animations
+    - Enhanced mobile responsiveness
+    - More detailed error feedback
 
-Session management improvements
+## 🎓 Academic Context
 
-👥 Additional User Features
-
-Profile management and editing
-
-Change password flow
-
-User roles and permissions (admin/user)
-
-Profile picture uploads
-
-🛠️ Technical Enhancements
-
-Unit and integration testing
-
-Docker containerization
-
-CI/CD pipeline setup
-
-Deployment to cloud platforms
-
-📱 UI/UX Improvements
-
-Dark/light mode toggle
-
-Better loading states and animations
-
-Enhanced mobile responsiveness
-
-More detailed error feedback
-
-🎓 Academic Context
 As a first-year Engineering student, this project represents my practical application of theoretical concepts including:
 
-Software engineering principles
+* Software engineering principles
+* Database systems and design
+* Web development fundamentals
+* Security best practices
+* API design patterns
 
-Database systems and design
+## 🤝 Contributing & Feedback
 
-Web development fundamentals
-
-Security best practices
-
-API design patterns
-
-🤝 Contributing & Feedback
 This is primarily a learning project, but I welcome suggestions and constructive feedback! If you have ideas for improvements or find areas where I could implement better practices, please feel free to share.
 
-Note to reviewers/recruiters: I'm especially interested in feedback on:
+**Note to reviewers/recruiters:** I'm especially interested in feedback on:
 
-Code quality and organization
+* Code quality and organization
+* Security implementations
+* Performance considerations
+* Industry best practices
 
-Security implementations
+## 🙋‍♂️ About the Developer
 
-Performance considerations
-
-Industry best practices
-
-🙋‍♂️ About the Developer
 I'm a passionate first-year Engineering student embarking on my journey into software engineering. This project represents my first major step into full-stack web development, combining backend API design with frontend user interfaces.
 
-Current Learning Focus:
+**Current Learning Focus:**
 
-Full-stack web development
+* Full-stack web development
+* Software architecture and design patterns
+* Database systems and optimization
+* Security principles in web applications
 
-Software architecture and design patterns
+### Connect with me:
 
-Database systems and optimization
+* **GitHub:** ugbajaivan
+* **LinkedIn:** www.linkedin.com/in/ivan-ugbaja
+* **E-Mail:** ugbajaivan@gmail.com
 
-Security principles in web applications
+*"The expert in anything was once a beginner." - Helen Hayes*
 
-Connect with me:
-
-GitHub: ugbajaivan
-
-LinkedIn: www.linkedin.com/in/ivan-ugbaja
-
-"The expert in anything was once a beginner." - Helen Hayes
-
-⭐ If you find this project interesting or have feedback for a learning developer, I'd appreciate your insights!
+**⭐ If you find this project interesting or have feedback for a learning developer, I'd appreciate your insights!**
