@@ -13,13 +13,13 @@ This is my **first full-stack web application** built as an Engineering student 
 | Layer | Technology | What I Learned |
 | :--- | :--- | :--- |
 | Backend | FastAPI (Python) | Building REST APIs with automatic documentation |
-| Database | SQLite + SQLAlchemy | Database modeling, ORM, and migrations |
+| Database | SQLite + SQLAlchemy | Database modSeling, ORM, and migrations |
 | Authentication | JWT Tokens | Token-based auth, password hashing, security |
-| Frontend	React + React Router	Component-based UI, client-side routing
+| Frontend | React + React Router | Component-based UI, client-side routing |
 | HTTP Client | Axios | API communication, interceptors, error handling |
 | Styling | CSS | Responsive design, modern UI principles |
 | Security | CORS, bcrypt | Cross-origin security, password protection |
-
+S
 ## 🚀 Features Implemented
 
 ### ✅ Core Authentication
