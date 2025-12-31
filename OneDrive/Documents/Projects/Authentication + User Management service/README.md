@@ -19,7 +19,7 @@ This is my **first full-stack web application** built as an Engineering student 
 | HTTP Client | Axios | API communication, interceptors, error handling |
 | Styling | CSS | Responsive design, modern UI principles |
 | Security | CORS, bcrypt | Cross-origin security, password protection |
-S
+
 ## 🚀 Features Implemented
 
 ### ✅ Core Authentication
